@@ -141,7 +141,9 @@ protected:
   uint current_costmap_size_[2];
 
   // The global frame of the costmap
-  const std::string global_frame_{"map"};
+  std::string global_frame_{"map"};
+
+  std::string robot_base_frame_{"base_link"};
 
   // Whether or not the planner should be allowed to plan through unknown space
   const bool allow_unknown_{true};

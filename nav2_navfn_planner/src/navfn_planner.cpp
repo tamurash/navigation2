@@ -52,6 +52,8 @@ NavfnPlanner::NavfnPlanner()
   // Declare this node's parameters
   declare_parameter("tolerance", rclcpp::ParameterValue(0.0));
   declare_parameter("use_astar", rclcpp::ParameterValue(false));
+  declare_parameter("global_frame", rclcpp::ParameterValue("map"));
+  declare_parameter("robot_base_frame", rclcpp::ParameterValue("base_link"));
 
   tf_ = std::make_shared<tf2_ros::Buffer>(get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_);
@@ -70,6 +72,8 @@ NavfnPlanner::on_configure(const rclcpp_lifecycle::State & /*state*/)
   // Initialize parameters
   get_parameter("tolerance", tolerance_);
   get_parameter("use_astar", use_astar_);
+  get_parameter("global_frame", global_frame_);
+  get_parameter("robot_base_frame", robot_base_frame_);
 
   getCostmap(costmap_);
   RCLCPP_DEBUG(get_logger(), "Costmap size: %d,%d",
@@ -174,7 +178,7 @@ NavfnPlanner::computePathToPose()
       costmap_.metadata.size_x, costmap_.metadata.size_y);
 
     geometry_msgs::msg::PoseStamped start;
-    if (!nav2_util::getCurrentPose(start, *tf_)) {
+    if (!nav2_util::getCurrentPose(start, *tf_, global_frame_, robot_base_frame_)) {
       return;
     }
 
